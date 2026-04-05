@@ -1,13 +1,12 @@
 # SpeakFlow · 英文口說學習平台
 
-> 完全靜態、免安裝，架在 GitHub Pages 即可使用的英文口說練習網站。  
+> 免安裝的英文口說練習網站。  
 > 所有學習資料存於你自己的瀏覽器，無需帳號、無需登入。
 
 ---
 
 ## 目錄
 
-- [部署到 GitHub Pages](#部署到-github-pages)
 - [功能總覽](#功能總覽)
 - [功能詳細說明](#功能詳細說明)
   - [🏠 首頁](#-首頁)
@@ -17,53 +16,6 @@
   - [📊 學習進度](#-學習進度)
 - [瀏覽器相容性](#瀏覽器相容性)
 - [常見問題](#常見問題)
-
----
-
-## 部署到 GitHub Pages
-
-### 步驟一：建立 GitHub Repository
-
-1. 前往 [github.com](https://github.com) 登入帳號
-2. 點右上角 **＋ → New repository**
-3. 設定：
-   - **Repository name**：隨意命名，例如 `speakflow`
-   - **Visibility**：選 `Public`（免費方案需為公開）
-4. 點 **Create repository**
-
-### 步驟二：上傳 index.html
-
-**方法 A：直接在網頁拖放（最簡單）**
-
-1. 進入 repository 頁面
-2. 點 **Add file → Upload files**
-3. 將 `index.html` 拖入上傳區
-4. 填寫 commit message，例如 `上傳 SpeakFlow`
-5. 點 **Commit changes**
-
-**方法 B：Git 指令**
-
-```bash
-git init
-git add index.html
-git commit -m "上傳 SpeakFlow"
-git branch -M main
-git remote add origin https://github.com/你的帳號/你的repo名稱.git
-git push -u origin main
-```
-
-### 步驟三：開啟 GitHub Pages
-
-1. 進入 repository → **Settings → Pages**
-2. **Branch** 選 `main`，資料夾選 `/ (root)`
-3. 點 **Save**
-4. 等待約 1～2 分鐘，頁面上方會出現網址：
-
-```
-https://你的帳號.github.io/你的repo名稱/
-```
-
-> GitHub Pages 自動提供 HTTPS，麥克風錄音功能可正常使用。
 
 ---
 
@@ -238,7 +190,7 @@ https://你的帳號.github.io/你的repo名稱/
 
 **Q：麥克風無法使用？**
 
-A：需要 HTTPS 環境。架在 GitHub Pages 上會自動有 HTTPS，可以正常使用。若在本機以 `file://` 開啟，Chrome 預設會封鎖麥克風。解決方法：
+A：需要 HTTPS 環境。若在本機以 `file://` 直接開啟，Chrome 預設會封鎖麥克風。請使用支援 HTTPS 的網址開啟網站，或在本機啟動伺服器：
 
 ```bash
 # 用 Python 啟動本機伺服器
@@ -281,12 +233,6 @@ A：
 **Q：手機可以用嗎？**
 
 A：可以。網站支援手機瀏覽器，介面會自適應螢幕大小。建議使用 Chrome（Android）或 Safari（iOS）。
-
----
-
-**Q：網站更新後，GitHub Pages 多久生效？**
-
-A：上傳新版 `index.html` 到 GitHub 後，通常 1～3 分鐘內生效。若看到舊內容，按 `Ctrl+Shift+R`（Windows）或 `Cmd+Shift+R`（Mac）強制重新整理。
 
 ---
 
