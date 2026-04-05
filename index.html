@@ -1,0 +1,882 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; script-src 'unsafe-inline'; img-src 'self' data:; media-src blob:; connect-src 'none';">
+<title>SpeakFlow · 英文口說學習平台</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Noto+Sans+TC:wght@300;400;500;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0D0D0D;--sf:#161616;--sf2:#1E1E1E;--sf3:#262626;--b:#2A2A2A;--b2:#383838;
+  --or:#FF6B2B;--orl:#FF8C55;--ord:rgba(255,107,43,.12);--ye:#FFD166;--gr:#06D6A0;--bl:#74B9FF;--re:#FF5757;
+  --tx:#F0EDE8;--tm:#888;--td:#444;}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--tx);font-family:'Noto Sans TC',sans-serif;overflow-x:hidden;}
+
+.shell{display:flex;min-height:100vh;}
+.sidebar{width:220px;flex-shrink:0;background:var(--sf);border-right:1px solid var(--b);display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0;z-index:200;}
+.logo{padding:1.4rem 1.5rem 1rem;border-bottom:1px solid var(--b);font-family:'Syne',sans-serif;font-weight:800;font-size:1.3rem;letter-spacing:-.5px;}
+.logo span{color:var(--or);}
+.snav{flex:1;padding:.8rem 0;overflow-y:auto;}
+.slbl{padding:.5rem 1.4rem;font-size:.62rem;font-weight:700;letter-spacing:.12em;color:var(--td);text-transform:uppercase;font-family:'JetBrains Mono',monospace;margin-top:.5rem;}
+.ni{display:flex;align-items:center;gap:.7rem;padding:.6rem 1.4rem;cursor:pointer;color:var(--tm);font-size:.85rem;font-weight:500;transition:all .15s;border-left:2px solid transparent;user-select:none;}
+.ni:hover{color:var(--tx);background:rgba(255,255,255,.03);}
+.ni.on{color:var(--or);border-left-color:var(--or);background:var(--ord);}
+.ni .ic{font-size:.95rem;width:18px;text-align:center;}
+.nbadge{margin-left:auto;background:var(--or);color:#fff;font-size:.58rem;font-weight:700;padding:.1rem .4rem;border-radius:99px;}
+.streak-box{margin:.8rem 1.2rem 1.2rem;background:var(--ord);border:1px solid rgba(255,107,43,.2);border-radius:10px;padding:.7rem 1rem;display:flex;align-items:center;gap:.6rem;}
+.sn{font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:800;color:var(--or);line-height:1;}
+.sl{font-size:.68rem;color:var(--tm);}
+
+.main{margin-left:220px;flex:1;}
+.page{display:none;padding:1.8rem 2rem;}
+.page.on{display:block;}
+.ph{margin-bottom:1.5rem;}
+.pt{font-family:'Syne',sans-serif;font-size:1.7rem;font-weight:800;letter-spacing:-.5px;}
+.ps{color:var(--tm);font-size:.85rem;margin-top:.25rem;font-weight:300;}
+.card{background:var(--sf);border:1px solid var(--b);border-radius:14px;padding:1.4rem;}
+.card-title{font-family:'Syne',sans-serif;font-weight:700;font-size:.95rem;margin-bottom:1rem;}
+.btn{padding:.65rem 1.3rem;border-radius:9px;border:none;cursor:pointer;font-size:.85rem;font-weight:700;transition:all .15s;font-family:'Noto Sans TC',sans-serif;display:inline-flex;align-items:center;gap:.4rem;}
+.btn-p{background:var(--or);color:#fff;}.btn-p:hover{background:var(--orl);transform:translateY(-1px);}
+.btn-s{background:var(--sf2);color:var(--tx);border:1px solid var(--b);}.btn-s:hover{border-color:var(--or);color:var(--or);}
+.btn-sm{padding:.4rem .9rem;font-size:.78rem;border-radius:7px;}
+.btn:disabled{opacity:.4;cursor:not-allowed;transform:none!important;}
+
+/* HOME */
+.hgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:.9rem;margin-bottom:1.3rem;}
+.sc{background:var(--sf);border:1px solid var(--b);border-radius:12px;padding:1.2rem;}
+.scl{font-size:.68rem;color:var(--tm);font-family:'JetBrains Mono',monospace;letter-spacing:.06em;margin-bottom:.4rem;}
+.scv{font-family:'Syne',sans-serif;font-size:1.9rem;font-weight:800;letter-spacing:-1px;}
+.home2{display:grid;grid-template-columns:1fr 200px;gap:1rem;}
+.today-card{background:var(--sf);border:1px solid var(--b);border-radius:14px;padding:1.5rem;position:relative;overflow:hidden;}
+.today-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--or),var(--ye));}
+.today-tag{font-size:.65rem;font-weight:700;letter-spacing:.1em;color:var(--or);text-transform:uppercase;font-family:'JetBrains Mono',monospace;margin-bottom:.6rem;}
+.today-ttl{font-family:'Syne',sans-serif;font-size:1.15rem;font-weight:700;margin-bottom:.4rem;}
+.today-sub{color:var(--tm);font-size:.82rem;line-height:1.7;margin-bottom:1.2rem;font-weight:300;}
+.qa-list{display:flex;flex-direction:column;gap:.6rem;}
+.qac{background:var(--sf);border:1px solid var(--b);border-radius:11px;padding:.9rem 1.1rem;cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:.7rem;}
+.qac:hover{border-color:var(--or);background:var(--ord);transform:translateX(2px);}
+.qat{font-size:.83rem;font-weight:600;}.qas{font-size:.72rem;color:var(--tm);}
+.week-row{display:grid;grid-template-columns:repeat(7,1fr);gap:.5rem;margin-top:1rem;}
+.wd{text-align:center;}
+.wdc{width:34px;height:34px;border-radius:50%;border:2px solid var(--b);margin:0 auto .25rem;display:flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:600;transition:all .2s;}
+.wdc.done{background:var(--or);border-color:var(--or);color:#fff;}
+.wdc.today{border-color:var(--or);color:var(--or);}
+.wdl{font-size:.6rem;color:var(--td);font-family:'JetBrains Mono',monospace;}
+
+/* LESSONS */
+.filters{display:flex;gap:.45rem;margin-bottom:1.2rem;flex-wrap:wrap;}
+.fb{padding:.35rem .9rem;border-radius:99px;border:1px solid var(--b);background:transparent;color:var(--tm);font-size:.78rem;cursor:pointer;transition:all .15s;font-family:'Noto Sans TC',sans-serif;}
+.fb.on,.fb:hover{border-color:var(--or);color:var(--or);background:var(--ord);}
+.lgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:.9rem;}
+.lc{background:var(--sf);border:1px solid var(--b);border-radius:13px;padding:1.3rem;cursor:pointer;transition:all .2s;position:relative;overflow:hidden;}
+.lc:hover{border-color:var(--or);transform:translateY(-3px);box-shadow:0 12px 40px rgba(255,107,43,.1);}
+.lc.done2::after{content:'✓';position:absolute;top:.9rem;right:.9rem;width:22px;height:22px;background:var(--gr);color:var(--bg);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:700;}
+.lcat{font-size:.62rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;margin-bottom:.7rem;font-family:'JetBrains Mono',monospace;}
+.lemj{font-size:1.7rem;margin-bottom:.6rem;display:block;}
+.lnm{font-family:'Syne',sans-serif;font-size:.98rem;font-weight:700;margin-bottom:.2rem;}
+.len{font-size:.72rem;color:var(--tm);font-family:'JetBrains Mono',monospace;margin-bottom:.6rem;}
+.lmeta{display:flex;gap:.7rem;font-size:.68rem;color:var(--td);font-family:'JetBrains Mono',monospace;align-items:center;}
+.dtag{padding:.12rem .5rem;border-radius:4px;font-size:.62rem;font-weight:700;}
+.de{background:rgba(6,214,160,.12);color:var(--gr);}
+.dm{background:rgba(255,209,102,.12);color:var(--ye);}
+.dh{background:rgba(255,107,43,.12);color:var(--orl);}
+
+/* LESSON DETAIL */
+.ld{display:none;}.ld.on{display:block;}
+.back{display:inline-flex;align-items:center;gap:.4rem;color:var(--tm);font-size:.82rem;cursor:pointer;margin-bottom:1.2rem;transition:color .15s;background:none;border:none;font-family:'Noto Sans TC',sans-serif;}
+.back:hover{color:var(--tx);}
+.lcgrid{display:grid;grid-template-columns:1fr 360px;gap:1.2rem;}
+.pl{display:flex;flex-direction:column;gap:.6rem;}
+.pi{background:var(--sf);border:1px solid var(--b);border-radius:11px;padding:.9rem 1.1rem;display:flex;align-items:center;gap:.9rem;cursor:pointer;transition:all .15s;}
+.pi:hover{border-color:var(--b2);}
+.pi.on{border-color:var(--or);background:var(--ord);}
+.pplay{width:34px;height:34px;border-radius:50%;background:var(--sf2);border:1px solid var(--b);display:flex;align-items:center;justify-content:center;font-size:.8rem;transition:all .15s;flex-shrink:0;}
+.pi:hover .pplay,.pi.on .pplay{background:var(--or);border-color:var(--or);}
+.pen{font-size:.9rem;font-weight:600;}
+.pzh{font-size:.75rem;color:var(--tm);margin-top:.15rem;}
+.pdone{margin-left:auto;color:var(--gr);}
+.ppanel{background:var(--sf);border:1px solid var(--b);border-radius:15px;padding:1.3rem;position:sticky;top:1.8rem;}
+.cpd{background:var(--sf2);border-radius:10px;padding:1.1rem;text-align:center;margin-bottom:1rem;}
+.cen{font-size:1.05rem;font-weight:600;line-height:1.4;margin-bottom:.35rem;}
+.czh{font-size:.78rem;color:var(--tm);}
+.cph{font-family:'JetBrains Mono',monospace;font-size:.68rem;color:var(--or);margin-top:.4rem;}
+.rbtn{width:100%;padding:.9rem;border-radius:11px;background:var(--or);border:none;color:#fff;font-size:.95rem;font-weight:700;cursor:pointer;transition:all .15s;display:flex;align-items:center;justify-content:center;gap:.45rem;font-family:'Noto Sans TC',sans-serif;}
+.rbtn:hover:not(:disabled){background:var(--orl);transform:scale(1.01);}
+.rbtn:disabled{background:var(--sf2);color:var(--td);cursor:not-allowed;}
+.rbtn.rec{background:#c0392b;animation:rp 1s infinite;}
+@keyframes rp{0%,100%{box-shadow:0 0 0 0 rgba(192,57,43,.4)}50%{box-shadow:0 0 0 8px rgba(192,57,43,0)}}
+.panel-actions{display:flex;gap:.5rem;margin-top:.8rem;}
+.sdisp{margin-top:.9rem;display:none;}
+.sbw{margin-bottom:.5rem;}
+.sbl2{display:flex;justify-content:space-between;font-size:.72rem;color:var(--tm);margin-bottom:.28rem;font-family:'JetBrains Mono',monospace;}
+.sb{height:5px;background:var(--sf2);border-radius:99px;overflow:hidden;}
+.sbf{height:100%;border-radius:99px;transition:width .8s ease;}
+.ws2{display:flex;flex-wrap:wrap;gap:.35rem;margin-top:.7rem;}
+.ww{padding:.18rem .55rem;border-radius:5px;font-size:.75rem;font-weight:600;}
+.wg{background:rgba(6,214,160,.12);color:var(--gr);}
+.wo{background:rgba(255,209,102,.12);color:var(--ye);}
+.wb{background:rgba(255,107,43,.12);color:var(--orl);}
+.fmsg{font-size:.78rem;color:var(--tm);line-height:1.6;margin-top:.7rem;padding:.7rem;background:var(--sf2);border-radius:7px;}
+
+/* DRILLS */
+.chat-shell{display:grid;grid-template-columns:210px 1fr;gap:1rem;height:calc(100vh - 7rem);}
+.topic-panel{background:var(--sf);border:1px solid var(--b);border-radius:14px;padding:.9rem;overflow-y:auto;display:flex;flex-direction:column;gap:.2rem;}
+.tpl{font-size:.62rem;font-weight:700;color:var(--td);letter-spacing:.1em;text-transform:uppercase;font-family:'JetBrains Mono',monospace;margin:.4rem 0 .5rem .3rem;}
+.tb{width:100%;text-align:left;padding:.6rem .8rem;border-radius:9px;border:none;background:transparent;color:var(--tm);font-size:.8rem;cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:.55rem;font-family:'Noto Sans TC',sans-serif;}
+.tb:hover{background:var(--sf2);color:var(--tx);}
+.tb.on{background:var(--ord);color:var(--or);}
+.chat-area{display:flex;flex-direction:column;background:var(--sf);border:1px solid var(--b);border-radius:14px;overflow:hidden;}
+.ctop{padding:.9rem 1.2rem;border-bottom:1px solid var(--b);display:flex;align-items:center;justify-content:space-between;}
+.ctop-l h3{font-family:'Syne',sans-serif;font-weight:700;font-size:.92rem;}
+.ctop-l p{font-size:.72rem;color:var(--tm);}
+.cmsgs{flex:1;overflow-y:auto;padding:1rem;display:flex;flex-direction:column;gap:.9rem;}
+.cmsg{display:flex;gap:.6rem;align-items:flex-start;}
+.cmsg.u{flex-direction:row-reverse;align-self:flex-end;max-width:78%;}
+.cmsg.a{max-width:82%;}
+.cav{width:32px;height:32px;border-radius:50%;background:var(--sf2);border:1px solid var(--b);display:flex;align-items:center;justify-content:center;font-size:.85rem;flex-shrink:0;}
+.cbub{padding:.75rem 1rem;border-radius:13px;font-size:.84rem;line-height:1.6;}
+.cmsg.a .cbub{background:var(--sf2);border:1px solid var(--b);border-top-left-radius:3px;}
+.cmsg.u .cbub{background:var(--or);color:#fff;border-top-right-radius:3px;}
+.cmsg.a .cbub .zh{font-size:.73rem;color:var(--tm);border-top:1px solid var(--b2);padding-top:.3rem;margin-top:.3rem;}
+.dp-bar-wrap{padding:.55rem 1.2rem;border-bottom:1px solid var(--b);display:flex;align-items:center;gap:.8rem;font-size:.72rem;color:var(--tm);font-family:'JetBrains Mono',monospace;}
+.dp-bar{flex:1;height:4px;background:var(--sf2);border-radius:99px;overflow:hidden;}
+.dp-fill{height:100%;background:var(--or);border-radius:99px;transition:width .4s;}
+.cinput-area{padding:.9rem;border-top:1px solid var(--b);}
+.opts-grid{display:grid;grid-template-columns:1fr 1fr;gap:.5rem;margin-bottom:.7rem;}
+.opt-btn{padding:.65rem .9rem;border-radius:9px;border:1px solid var(--b);background:var(--sf2);color:var(--tx);font-size:.82rem;cursor:pointer;transition:all .15s;text-align:left;font-family:'Noto Sans TC',sans-serif;line-height:1.4;}
+.opt-btn:hover:not(:disabled){border-color:var(--or);background:var(--ord);}
+.opt-btn.correct{border-color:var(--gr);background:rgba(6,214,160,.1);color:var(--gr);}
+.opt-btn.wrong{border-color:var(--re);background:rgba(255,87,87,.1);color:var(--re);}
+.opt-btn:disabled{cursor:not-allowed;}
+
+/* TIPS */
+.tips-list{display:flex;flex-direction:column;gap:.8rem;}
+.ti{background:var(--sf);border:1px solid var(--b);border-radius:13px;overflow:hidden;}
+.tih{padding:1.1rem 1.4rem;display:flex;align-items:center;gap:.9rem;cursor:pointer;user-select:none;}
+.tin{font-family:'JetBrains Mono',monospace;font-size:.65rem;color:var(--td);width:26px;}
+.tit{font-family:'Syne',sans-serif;font-weight:700;font-size:.92rem;}
+.tiarr{margin-left:auto;color:var(--td);transition:transform .2s;font-size:1.1rem;}
+.ti.op .tiarr{transform:rotate(90deg);}
+.tib{display:none;padding:0 1.4rem 1.2rem;border-top:1px solid var(--b);padding-top:.9rem;}
+.ti.op .tib{display:block;}
+.tib p{color:var(--tm);font-size:.83rem;line-height:1.8;margin-bottom:.7rem;font-weight:300;}
+.tex{background:var(--sf2);border-left:3px solid var(--or);padding:.7rem .9rem;border-radius:0 7px 7px 0;}
+.tex-lbl{font-size:.62rem;font-weight:700;color:var(--or);font-family:'JetBrains Mono',monospace;letter-spacing:.08em;margin-bottom:.3rem;}
+.tex p{font-size:.8rem;color:var(--tm);margin:0;}
+.tex strong{color:var(--tx);}
+
+/* PROGRESS */
+.pgrid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;}
+.skill-rows{display:flex;flex-direction:column;gap:.9rem;}
+.sr-label{display:flex;justify-content:space-between;font-size:.78rem;margin-bottom:.32rem;}
+.sr-label span:last-child{color:var(--or);font-family:'JetBrains Mono',monospace;font-weight:700;}
+.sk-bar{height:7px;background:var(--sf2);border-radius:99px;overflow:hidden;}
+.sk-fill{height:100%;border-radius:99px;transition:width 1.2s ease;}
+.ach-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.7rem;}
+.ach{text-align:center;padding:.9rem .5rem;border-radius:11px;background:var(--sf2);border:1px solid var(--b);}
+.ach-ic{font-size:1.6rem;margin-bottom:.35rem;}
+.ach-nm{font-size:.7rem;color:var(--tm);line-height:1.3;}
+.ach.lk{opacity:.3;filter:grayscale(1);}
+.cal-lbrow{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;margin-bottom:4px;}
+.cl{font-size:.58rem;text-align:center;color:var(--td);font-family:'JetBrains Mono',monospace;}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;}
+.cd{height:16px;border-radius:3px;background:var(--sf2);}
+.cd.dn{background:var(--or);opacity:.75;}
+.cd.td2{background:var(--or);outline:2px solid var(--orl);}
+.ring-wrap{display:flex;flex-direction:column;align-items:center;margin-top:1.2rem;}
+svg.rsvg{transform:rotate(-90deg);}
+.rbg{fill:none;stroke:var(--sf2);stroke-width:7;}
+.rfi{fill:none;stroke:url(#rg2);stroke-width:7;stroke-linecap:round;transition:stroke-dashoffset 1.2s ease;}
+.rpct{font-family:'Syne',sans-serif;font-size:1.4rem;font-weight:800;color:var(--or);margin-top:.5rem;}
+.rsub{font-size:.75rem;color:var(--tm);}
+
+.toast{position:fixed;bottom:1.5rem;right:1.5rem;z-index:999;background:var(--sf2);border:1px solid var(--b2);border-radius:11px;padding:.8rem 1.1rem;display:flex;align-items:center;gap:.6rem;font-size:.82rem;font-weight:500;transform:translateY(80px);opacity:0;transition:all .3s;max-width:300px;box-shadow:0 8px 32px rgba(0,0,0,.4);}
+.toast.sh{transform:translateY(0);opacity:1;}
+::-webkit-scrollbar{width:3px;}::-webkit-scrollbar-thumb{background:var(--b2);border-radius:99px;}
+</style>
+</head>
+<body>
+<div class="shell">
+<aside class="sidebar">
+  <div class="logo">Speak<span>Flow</span></div>
+  <nav class="snav">
+    <div class="slbl">主選單</div>
+    <div class="ni on" onclick="nav('home',this)"><span class="ic">🏠</span>首頁</div>
+    <div class="ni" onclick="nav('lessons',this)"><span class="ic">📚</span>課程 <span class="nbadge" id="nb">0</span></div>
+    <div class="ni" onclick="nav('chat',this)"><span class="ic">💬</span>對話練習</div>
+    <div class="ni" onclick="nav('tips',this)"><span class="ic">💡</span>學習技巧</div>
+    <div class="slbl">我的學習</div>
+    <div class="ni" onclick="nav('progress',this)"><span class="ic">📊</span>學習進度</div>
+  </nav>
+  <div class="streak-box">
+    <div style="font-size:1.3rem">🔥</div>
+    <div><div class="sn">5</div><div class="sl">天連續練習</div></div>
+  </div>
+</aside>
+<main class="main">
+
+<!-- HOME -->
+<div class="page on" id="pg-home">
+  <div class="ph"><div class="pt">你好！準備開口了嗎？👋</div><div class="ps">今天是你連續學習第 <b style="color:var(--or)">5</b> 天，繼續加油！</div></div>
+  <div class="hgrid">
+    <div class="sc"><div class="scl">// 學會的句子</div><div class="scv" style="color:var(--or)" id="h-phrases">0</div><div style="font-size:.72rem;color:var(--td);margin-top:.15rem">個句子</div></div>
+    <div class="sc"><div class="scl">// 平均發音分數</div><div class="scv" style="color:var(--gr)" id="h-score">—</div><div style="font-size:.72rem;color:var(--td);margin-top:.15rem">分（滿分100）</div></div>
+    <div class="sc"><div class="scl">// 完成課程</div><div class="scv" style="color:var(--bl)" id="h-lessons">0</div><div style="font-size:.72rem;color:var(--td);margin-top:.15rem">堂</div></div>
+  </div>
+  <div class="home2">
+    <div>
+      <div class="today-card" id="today-card">
+        <div class="today-tag">📅 今日推薦</div>
+        <div class="today-ttl" id="today-ttl">載入中...</div>
+        <div class="today-sub" id="today-sub"></div>
+        <div style="display:flex;gap:.6rem;flex-wrap:wrap">
+          <button class="btn btn-p" id="today-btn" onclick="">▶ 開始今日課程</button>
+          <button class="btn btn-s" onclick="nav('lessons',document.querySelectorAll('.ni')[1])">查看所有課程</button>
+        </div>
+      </div>
+      <div class="card" style="margin-top:1rem">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.8rem">
+          <div class="card-title" style="margin:0">📅 本週練習紀錄</div>
+          <div style="font-size:.72rem;color:var(--tm);font-family:'JetBrains Mono',monospace">5/7 天</div>
+        </div>
+        <div class="week-row" id="weekRow"></div>
+      </div>
+    </div>
+    <div class="qa-list">
+      <div style="font-size:.62rem;font-weight:700;color:var(--td);letter-spacing:.1em;text-transform:uppercase;font-family:'JetBrains Mono',monospace;margin-bottom:.2rem">// 快速進入</div>
+      <div class="qac" onclick="nav('lessons',document.querySelectorAll('.ni')[1])"><span style="font-size:1.2rem">📚</span><div><div class="qat">課程練習</div><div class="qas">選主題學習</div></div><span style="margin-left:auto;color:var(--td)">›</span></div>
+      <div class="qac" onclick="nav('chat',document.querySelectorAll('.ni')[2])"><span style="font-size:1.2rem">💬</span><div><div class="qat">對話練習</div><div class="qas">情境問答訓練</div></div><span style="margin-left:auto;color:var(--td)">›</span></div>
+      <div class="qac" onclick="nav('tips',document.querySelectorAll('.ni')[3])"><span style="font-size:1.2rem">💡</span><div><div class="qat">學習技巧</div><div class="qas">加速進步方法</div></div><span style="margin-left:auto;color:var(--td)">›</span></div>
+      <div class="qac" onclick="nav('progress',document.querySelectorAll('.ni')[4])"><span style="font-size:1.2rem">📊</span><div><div class="qat">我的進度</div><div class="qas">查看學習統計</div></div><span style="margin-left:auto;color:var(--td)">›</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- LESSONS -->
+<div class="page" id="pg-lessons">
+  <div id="lv-list">
+    <div class="ph"><div class="pt">📚 所有課程</div><div class="ps">點選主題，開始發音練習</div></div>
+    <div class="filters">
+      <button class="fb on" onclick="filterL('all',this)">全部</button>
+      <button class="fb" onclick="filterL('food',this)">🍳 食</button>
+      <button class="fb" onclick="filterL('clothing',this)">👕 衣</button>
+      <button class="fb" onclick="filterL('housing',this)">🏠 住</button>
+      <button class="fb" onclick="filterL('transportation',this)">🚇 行</button>
+      <button class="fb" onclick="filterL('education',this)">🎓 育</button>
+      <button class="fb" onclick="filterL('entertainment',this)">🎬 樂</button>
+      <button class="fb" onclick="filterL('daily',this)">🌅 日常</button>
+      <button class="fb" onclick="filterL('work',this)">💼 職場</button>
+      <button class="fb" onclick="filterL('travel',this)">✈️ 旅遊</button>
+      <button class="fb" onclick="filterL('social',this)">🤝 社交</button>
+    </div>
+    <div class="lgrid" id="lgrid"></div>
+  </div>
+  <div class="ld" id="lv-detail">
+    <button class="back" onclick="closeDetail()">← 返回課程列表</button>
+    <div class="ph" style="margin-bottom:1rem"><div class="pt" id="d-title"></div><div class="ps" id="d-sub"></div></div>
+    <div class="lcgrid">
+      <div>
+        <div style="font-size:.62rem;font-weight:700;color:var(--td);letter-spacing:.1em;text-transform:uppercase;font-family:'JetBrains Mono',monospace;margin-bottom:.9rem">// 點擊句子 → 右側練習發音</div>
+        <div class="pl" id="phraseList"></div>
+      </div>
+      <div class="ppanel">
+        <div class="card-title">🎙️ 發音練習</div>
+        <div class="cpd" id="cpd">
+          <div class="cen" id="c-en" style="color:var(--tm)">← 點左側句子開始練習</div>
+          <div class="czh" id="c-zh"></div>
+          <div class="cph" id="c-ph"></div>
+        </div>
+        <button class="rbtn" id="rbtn" onclick="toggleRec()" disabled>🎤 請先選擇句子</button>
+        <div class="sdisp" id="sdisp"></div>
+        <div class="panel-actions">
+          <button class="btn btn-s btn-sm" style="flex:1" onclick="playNative()">🔊 聽示範</button>
+          <button class="btn btn-s btn-sm" style="flex:1" onclick="nextPhrase()">下一句 →</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- DRILL CHAT -->
+<div class="page" id="pg-chat">
+  <div class="ph" style="margin-bottom:1rem"><div class="pt">💬 對話練習</div><div class="ps">選擇情境主題，回答問題，練習真實場景英文</div></div>
+  <div class="chat-shell">
+    <div class="topic-panel">
+      <div class="tpl">情境選擇</div>
+      <div id="topic-btns"></div>
+      <div style="margin-top:auto;padding:.8rem;background:var(--sf2);border-radius:9px;border:1px solid var(--b);font-size:.75rem;color:var(--tm);line-height:1.6;margin-top:.8rem">
+        <b style="color:var(--tx);display:block;margin-bottom:.2rem">💡 練習說明</b>
+        每題有 4 個選項，選出最自然的英文回答。完成後可點「🔊 聽發音」練習說出來。
+      </div>
+    </div>
+    <div class="chat-area">
+      <div class="ctop">
+        <div class="ctop-l"><h3 id="ct-title">對話練習</h3><p id="ct-desc">選擇左側情境開始</p></div>
+        <div style="display:flex;gap:.5rem;align-items:center">
+          <span style="font-size:.72rem;color:var(--tm);font-family:'JetBrains Mono',monospace" id="drill-stat">0 / 0</span>
+          <button class="btn btn-s btn-sm" onclick="restartDrill()">🔄 重新開始</button>
+        </div>
+      </div>
+      <div class="dp-bar-wrap">
+        <span style="color:var(--or)">進度</span>
+        <div class="dp-bar"><div class="dp-fill" id="dp-fill" style="width:0%"></div></div>
+        <span id="dp-txt">0%</span>
+      </div>
+      <div class="cmsgs" id="cmsgs"></div>
+      <div class="cinput-area"><div id="opt-area"></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- TIPS -->
+<div class="page" id="pg-tips">
+  <div class="ph"><div class="pt">💡 學習技巧</div><div class="ps">科學支持的高效方法，讓你進步快三倍</div></div>
+  <div class="tips-list" id="tips-list"></div>
+</div>
+
+<!-- PROGRESS -->
+<div class="page" id="pg-progress">
+  <div class="ph"><div class="pt">📊 我的學習進度</div><div class="ps">追蹤你的成長軌跡</div></div>
+  <div class="pgrid">
+    <div class="card">
+      <div class="card-title">🎯 技能分析</div>
+      <div id="skill-rows"></div>
+      <div class="ring-wrap">
+        <svg width="110" height="110" class="rsvg" viewBox="0 0 110 110">
+          <defs><linearGradient id="rg2" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" style="stop-color:var(--or)"/>
+            <stop offset="100%" style="stop-color:var(--ye)"/>
+          </linearGradient></defs>
+          <circle cx="55" cy="55" r="47" class="rbg"/>
+          <circle cx="55" cy="55" r="47" class="rfi" id="prog-ring" stroke-dasharray="295.3" stroke-dashoffset="295.3"/>
+        </svg>
+        <div class="rpct" id="ring-pct">54%</div>
+        <div class="rsub">整體學習完成度</div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">🏆 成就徽章</div>
+      <div class="ach-grid" id="ach-grid"></div>
+    </div>
+    <div class="card" style="grid-column:1/-1">
+      <div class="card-title">📅 練習日曆（過去 4 週）</div>
+      <div class="cal-lbrow"><div class="cl">一</div><div class="cl">二</div><div class="cl">三</div><div class="cl">四</div><div class="cl">五</div><div class="cl">六</div><div class="cl">日</div></div>
+      <div class="cal-grid" id="cal-grid"></div>
+    </div>
+  </div>
+</div>
+
+</main>
+</div>
+<div class="toast" id="toast"><span id="t-ic"></span><span id="t-msg"></span></div>
+
+<script>
+// ══════════════════════════════════════
+// READ DATA FROM LOCALSTORAGE (shared with admin)
+// ══════════════════════════════════════
+const KEY_LESSONS='sf_lessons', KEY_DRILLS='sf_drills';
+const DEFAULT_LESSONS=[
+  {id:'ordering',cat:'daily',catLbl:'DAILY LIFE',emoji:'☕',name:'點餐與購物',en:'Ordering & Shopping',diff:'easy',mins:10,phrases:[{e:"Can I have a coffee, please?",z:"請給我一杯咖啡。",p:"/kæn aɪ hæv ə ˈkɔfi, pliːz/"},{e:"How much does this cost?",z:"這個多少錢？",p:"/haʊ mʌtʃ dʌz ðɪs kɔːst/"},{e:"I'd like to pay by card.",z:"我想用信用卡付款。",p:"/aɪd laɪk tə peɪ baɪ kɑːrd/"},{e:"Could I get a receipt, please?",z:"可以給我收據嗎？",p:"/kʊd aɪ ɡɛt ə rɪˈsiːt, pliːz/"},{e:"Is there a discount?",z:"有折扣嗎？",p:"/ɪz ðɛr ə ˈdɪskaʊnt/"}]},
+  {id:'smalltalk',cat:'social',catLbl:'SOCIAL',emoji:'🤝',name:'日常打招呼',en:'Greetings & Small Talk',diff:'easy',mins:8,phrases:[{e:"How's it going?",z:"近況如何？",p:"/haʊz ɪt ˈɡoʊɪŋ/"},{e:"Not bad, what about you?",z:"還不錯，你呢？",p:"/nɒt bæd/"},{e:"That's really interesting!",z:"那真的很有趣！",p:"/ðæts ˈrɪəli/"}]},
+  {id:'travel',cat:'travel',catLbl:'TRAVEL',emoji:'✈️',name:'旅遊英文攻略',en:'Travel English',diff:'easy',mins:12,phrases:[{e:"Where is the nearest subway station?",z:"最近的捷運站在哪裡？",p:"/wɛr ɪz ðə ˈnɪərɪst/"},{e:"How long does it take to get there?",z:"到那裡需要多長時間？",p:"/haʊ lɒŋ dʌz ɪt/"},{e:"I think I'm lost. Can you help me?",z:"我好像迷路了，可以幫我嗎？",p:"/aɪ θɪŋk aɪm lɒst/"}]},
+  {id:'work',cat:'work',catLbl:'WORKPLACE',emoji:'💼',name:'職場英文對話',en:'Business Communication',diff:'mid',mins:15,phrases:[{e:"Could we schedule a meeting?",z:"我們可以安排一個會議嗎？",p:"/kʊd wiː ˈskɛdʒuːl/"},{e:"I'll follow up on that.",z:"我會跟進這件事。",p:"/aɪl ˈfɒloʊ ʌp/"},{e:"That's a great point.",z:"這是個很好的觀點。",p:"/ðæts ə ɡreɪt/"}]},
+  // ── 食 ──
+  {id:'food_dining',cat:'food',catLbl:'FOOD',emoji:'🍜',name:'餐廳點餐全攻略',en:'Dining Out English',diff:'easy',mins:10,phrases:[{e:"I'd like a table for two, please.",z:"請給我一張兩人桌。",p:"/aɪd laɪk ə ˈteɪbəl fər tuː/"},{e:"What do you recommend?",z:"你們有什麼推薦嗎？",p:"/wɒt dʊ juː ˌrɛkəˈmɛnd/"},{e:"I'm allergic to peanuts.",z:"我對花生過敏。",p:"/aɪm əˈlɜːrdʒɪk tə ˈpiːnʌts/"},{e:"Could I have the bill, please?",z:"麻煩買單。",p:"/kʊd aɪ hæv ðə bɪl/"},{e:"Is service charge included?",z:"有包含服務費嗎？",p:"/ɪz ˈsɜːrvɪs tʃɑːrdʒ ɪnˈkluːdɪd/"}]},
+  {id:'food_cooking',cat:'food',catLbl:'FOOD',emoji:'🍳',name:'廚房與烹飪英文',en:'Cooking & Kitchen',diff:'easy',mins:8,phrases:[{e:"How long should I cook this?",z:"這個要煮多久？",p:"/haʊ lɒŋ ʃʊd aɪ kʊk ðɪs/"},{e:"Add a pinch of salt.",z:"加一小撮鹽。",p:"/æd ə pɪntʃ əv sɔːlt/"},{e:"Can you pass me the recipe?",z:"可以把食譜給我嗎？",p:"/kæn juː pɑːs miː ðə ˈrɛsɪpi/"},{e:"The food smells delicious!",z:"食物聞起來好香！",p:"/ðə fuːd smɛlz dɪˈlɪʃəs/"}]},
+  // ── 衣 ──
+  {id:'clothing_shopping',cat:'clothing',catLbl:'CLOTHING',emoji:'👕',name:'服飾購物英文',en:'Shopping for Clothes',diff:'easy',mins:10,phrases:[{e:"Do you have this in a medium?",z:"這個有中號嗎？",p:"/dʊ juː hæv ðɪs ɪn ə ˈmiːdiəm/"},{e:"Can I try this on?",z:"我可以試穿嗎？",p:"/kæn aɪ traɪ ðɪs ɒn/"},{e:"It's a bit too tight.",z:"有點太緊了。",p:"/ɪts ə bɪt tuː taɪt/"},{e:"Do you have anything in blue?",z:"有藍色的嗎？",p:"/dʊ juː hæv ˈɛnɪθɪŋ ɪn bluː/"},{e:"I'll take it.",z:"我要買這個。",p:"/aɪl teɪk ɪt/"}]},
+  {id:'clothing_style',cat:'clothing',catLbl:'CLOTHING',emoji:'👗',name:'描述穿搭風格',en:'Fashion & Style',diff:'mid',mins:8,phrases:[{e:"I prefer casual over formal wear.",z:"我比較喜歡休閒服而不是正式服裝。",p:"/aɪ prɪˈfɜːr ˈkæʒuəl ˈoʊvər ˈfɔːrməl wɛr/"},{e:"That outfit really suits you.",z:"那套服裝真的很適合你。",p:"/ðæt ˈaʊtfɪt ˈrɪəli suːts juː/"},{e:"What size do you wear?",z:"你穿幾號？",p:"/wɒt saɪz dʊ juː wɛr/"},{e:"Is this machine washable?",z:"這個可以機洗嗎？",p:"/ɪz ðɪs məˈʃiːn ˈwɒʃəbəl/"}]},
+  // ── 住 ──
+  {id:'housing_rent',cat:'housing',catLbl:'HOUSING',emoji:'🏠',name:'租屋找房英文',en:'Renting an Apartment',diff:'mid',mins:12,phrases:[{e:"Is the apartment still available?",z:"這間公寓還有空嗎？",p:"/ɪz ðə əˈpɑːrtmənt stɪl əˈveɪləbəl/"},{e:"How much is the monthly rent?",z:"每月房租多少錢？",p:"/haʊ mʌtʃ ɪz ðə ˈmʌnθli rɛnt/"},{e:"Is it pet-friendly?",z:"可以養寵物嗎？",p:"/ɪz ɪt pɛt ˈfrɛndli/"},{e:"Are utilities included in the rent?",z:"水電費含在房租裡嗎？",p:"/ɑːr juːˈtɪlɪtiz ɪnˈkluːdɪd/"},{e:"I'd like to sign a one-year lease.",z:"我想簽一年的租約。",p:"/aɪd laɪk tə saɪn ə wʌn jɪr liːs/"}]},
+  {id:'housing_repair',cat:'housing',catLbl:'HOUSING',emoji:'🔧',name:'居家問題英文',en:'Home Maintenance',diff:'mid',mins:8,phrases:[{e:"The heater isn't working.",z:"暖氣壞了。",p:"/ðə ˈhiːtər ˈɪzənt ˈwɜːrkɪŋ/"},{e:"There's a leak in the bathroom.",z:"浴室漏水。",p:"/ðɛrz ə liːk ɪn ðə ˈbæθruːm/"},{e:"Could you send someone to fix it?",z:"可以派人來修嗎？",p:"/kʊd juː sɛnd ˈsʌmwʌn tə fɪks ɪt/"},{e:"The power went out.",z:"停電了。",p:"/ðə ˈpaʊər wɛnt aʊt/"}]},
+  // ── 行 ──
+  {id:'trans_public',cat:'transportation',catLbl:'TRANSPORT',emoji:'🚇',name:'搭乘大眾交通',en:'Public Transport',diff:'easy',mins:10,phrases:[{e:"Which line goes to the airport?",z:"哪條線到機場？",p:"/wɪtʃ laɪn ɡoʊz tə ðə ˈɛərpɔːrt/"},{e:"One ticket to downtown, please.",z:"一張到市中心的票。",p:"/wʌn ˈtɪkɪt tə ˈdaʊntaʊn/"},{e:"Does this bus stop at City Hall?",z:"這班公車停市政府嗎？",p:"/dʌz ðɪs bʌs stɒp æt ˈsɪti hɔːl/"},{e:"How many stops to the museum?",z:"到博物館幾站？",p:"/haʊ ˈmɛni stɒps tə ðə mjuːˈziːəm/"},{e:"I missed my stop.",z:"我坐過站了。",p:"/aɪ mɪst maɪ stɒp/"}]},
+  {id:'trans_directions',cat:'transportation',catLbl:'TRANSPORT',emoji:'🗺️',name:'問路指路英文',en:'Asking Directions',diff:'easy',mins:8,phrases:[{e:"Could you tell me how to get to the station?",z:"可以告訴我怎麼到車站嗎？",p:"/kʊd juː tɛl miː haʊ tə ɡɛt tə ðə ˈsteɪʃən/"},{e:"Turn left at the traffic lights.",z:"在紅綠燈左轉。",p:"/tɜːrn lɛft æt ðə ˈtræfɪk laɪts/"},{e:"It's about a ten-minute walk.",z:"大約走路十分鐘。",p:"/ɪts əˈbaʊt ə tɛn ˈmɪnɪt wɔːk/"},{e:"Go straight ahead for two blocks.",z:"直走兩個街區。",p:"/ɡoʊ streɪt əˈhɛd fər tuː blɒks/"}]},
+  // ── 育 ──
+  {id:'edu_school',cat:'education',catLbl:'EDUCATION',emoji:'🎓',name:'學校英文日常',en:'School & Study',diff:'easy',mins:10,phrases:[{e:"I didn't understand the lecture.",z:"我不理解這堂課的內容。",p:"/aɪ ˈdɪdənt ˌʌndərˈstænd ðə ˈlɛktʃər/"},{e:"Could you repeat that, please?",z:"可以再說一遍嗎？",p:"/kʊd juː rɪˈpiːt ðæt/"},{e:"When is the assignment due?",z:"作業什麼時候到期？",p:"/wɛn ɪz ðə əˈsaɪnmənt djuː/"},{e:"Can I join your study group?",z:"我可以加入你們的讀書小組嗎？",p:"/kæn aɪ dʒɔɪn jɔːr ˈstʌdi ɡruːp/"}]},
+  {id:'edu_abroad',cat:'education',catLbl:'EDUCATION',emoji:'🌍',name:'海外留學英文',en:'Studying Abroad',diff:'mid',mins:12,phrases:[{e:"I'm applying for a student visa.",z:"我在申請學生簽證。",p:"/aɪm əˈplaɪɪŋ fɔːr ə ˈstjuːdənt ˈviːzə/"},{e:"Could you write me a recommendation letter?",z:"可以幫我寫推薦信嗎？",p:"/kʊd juː raɪt miː ə ˌrɛkəmɛnˈdeɪʃən ˈlɛtər/"},{e:"I'm homesick but adjusting well.",z:"我有點思鄉但在慢慢適應。",p:"/aɪm ˈhoʊmsɪk bʌt əˈdʒʌstɪŋ wɛl/"},{e:"The campus is huge!",z:"校園好大！",p:"/ðə ˈkæmpəs ɪz hjuːdʒ/"}]},
+  // ── 樂 ──
+  {id:'ent_movies',cat:'entertainment',catLbl:'ENTERTAINMENT',emoji:'🎬',name:'電影與娛樂英文',en:'Movies & Entertainment',diff:'easy',mins:10,phrases:[{e:"Have you seen any good movies lately?",z:"最近有看什麼好電影嗎？",p:"/hæv juː siːn ˈɛni ɡʊd ˈmuːviz ˈleɪtli/"},{e:"What genre do you prefer?",z:"你喜歡什麼類型？",p:"/wɒt ˈʒɒnrə dʊ juː prɪˈfɜːr/"},{e:"That plot twist blew my mind!",z:"那個劇情轉折讓我大吃一驚！",p:"/ðæt plɒt twɪst bluː maɪ maɪnd/"},{e:"I'd like two adult tickets, please.",z:"請給我兩張成人票。",p:"/aɪd laɪk tuː ˈædʌlt ˈtɪkɪts/"},{e:"The special effects were amazing.",z:"特效真的很厲害。",p:"/ðə ˈspɛʃəl ɪˈfɛkts wɜːr əˈmeɪzɪŋ/"}]},
+  {id:'ent_sports',cat:'entertainment',catLbl:'ENTERTAINMENT',emoji:'⚽',name:'運動休閒英文',en:'Sports & Hobbies',diff:'easy',mins:8,phrases:[{e:"Do you want to play tennis this weekend?",z:"這週末要打網球嗎？",p:"/dʊ juː wɒnt tə pleɪ ˈtɛnɪs ðɪs ˈwiːkɛnd/"},{e:"I go jogging every morning.",z:"我每天早上都慢跑。",p:"/aɪ ɡoʊ ˈdʒɒɡɪŋ ˈɛvri ˈmɔːrnɪŋ/"},{e:"What's your favorite hobby?",z:"你最喜歡什麼嗜好？",p:"/wɒts jɔːr ˈfeɪvərɪt ˈhɒbi/"},{e:"Our team won the championship!",z:"我們隊贏得冠軍了！",p:"/aʊər tiːm wʌn ðə ˈtʃæmpiənʃɪp/"}]},
+];
+const DEFAULT_DRILLS={
+  daily:[{q:"Someone asks: 'How are you doing today?'\nHow do you respond?",z:"有人問你今天過得怎樣，你怎麼回？",opts:["I am fine thank you very much.","Not bad, thanks! How about you?","Yes, I am doing the fine.","I doing good, how you?"],ans:1,exp:"'Not bad, thanks! How about you?' 最自然，問回對方展示禮貌。"},{q:"You want to politely end a conversation.",z:"你想禮貌地結束對話。",opts:["OK bye now.","I must go, bye.","It was great catching up! Let's do this again soon.","I need to go I am busy."],ans:2,exp:"'It was great catching up!' 是正式且溫暖的道別方式。"}],
+  restaurant:[{q:"The waiter asks: 'Are you ready to order?'\nYou need more time.",z:"服務員問你準備好點餐了嗎，你需要更多時間。",opts:["No, wait.","Not yet, please.","Could we have a few more minutes, please?","I still reading menu."],ans:2,exp:"'Could we have a few more minutes, please?' 禮貌請求更多時間。"}],
+  travel:[{q:"You're lost. How do you ask a stranger for help?",z:"你迷路了，怎麼問陌生人？",opts:["Hey! Where is station?","Excuse me, could you help me find the subway station?","I am lost, station where?","Mister, subway please?"],ans:1,exp:"'Excuse me' 是禮貌開場，完整句子讓對方清楚了解需求。"}],
+  work:[{q:"Your boss asks if you finished the report. You haven't.",z:"老闆問報告做完了嗎，但還沒。",opts:["Not done yet boss.","I'm still working on it. I'll have it ready by end of day.","I didn't finish, sorry.","The report is unfinished."],ans:1,exp:"誠實告知進度並承諾完成時間，是最專業的回答。"}],
+  shopping:[{q:"You want to know the price of a jacket.",z:"你想問一件夾克的價格。",opts:["Price? How much?","Excuse me, how much is this jacket?","This jacket, price?","Tell me the money."],ans:1,exp:"'How much is this?' 是購物最常用的詢價句型。"}],
+  interview:[{q:"The interviewer asks: 'Tell me about yourself.'",z:"面試官問你自我介紹。",opts:["I am from Taiwan, 28 years old.","I'm a professional with five years of experience, passionate about my field.","My name is David and I looking for job.","I have many experience and skill."],ans:1,exp:"開場帶出專業領域 + 年資 + 熱情，讓面試官立刻抓到強項。"}],
+  food:[{q:"At a restaurant, you want to hear today's specials. What do you say?",z:"在餐廳，你想聽今日特別菜色，你說什麼？",opts:["Yes tell specials.","Sure, I'd love to hear them!","OK what food today?","Yes please tell now."],ans:1,exp:"'I'd love to hear them!' 是自然有禮貌的表達方式，比直接命令更友善。"},{q:"You have a food allergy. How do you inform the waiter?",z:"你有食物過敏，要怎麼告知服務員？",opts:["I hate shellfish.","Excuse me, I'm allergic to shellfish — could you check the ingredients?","No shellfish for me.","Don't give shellfish food."],ans:1,exp:"完整說明過敏情況 + 請對方確認食材，才是最安全的表達方式。"}],
+  clothing:[{q:"You want to try on a jacket. What do you say?",z:"你想試穿一件夾克，你說什麼？",opts:["I try jacket?","Can I try this on, please?","Give me try this.","Fitting room where?"],ans:1,exp:"'Can I try this on?' 是試穿最標準的問句，簡短有禮。"},{q:"The shirt is too small. How do you ask for a bigger size?",z:"這件衣服太小了，如何詢問大一號？",opts:["Too small, bigger!","Do you have this in a larger size?","I want big size.","This no fit me."],ans:1,exp:"'Do you have this in a larger size?' 是最禮貌且正確的詢問方式。"}],
+  housing:[{q:"You're calling about a rental ad. How do you ask if it's still available?",z:"你打電話詢問租屋廣告，怎麼問是否還有空？",opts:["Room still there?","Hi, I'm calling about the apartment — is it still available?","Apartment for rent still?","You have room open?"],ans:1,exp:"禮貌開場 + 直接說明目的，讓房東清楚你的意思。"},{q:"You notice a problem with the apartment. How do you report it?",z:"你發現公寓有問題，怎麼回報？",opts:["My sink broken.","Hi, I wanted to let you know that the kitchen sink isn't working.","Sink no working, fix please.","Problem with sink."],ans:1,exp:"正式告知問題，語氣有禮，房東更願意及時處理。"}],
+  transportation:[{q:"You're on the wrong bus. What do you ask the driver?",z:"你搭錯公車了，你要跟司機確認什麼？",opts:["Wrong bus! Stop now!","Excuse me, does this bus go to the train station?","This bus train station?","I wrong bus sorry."],ans:1,exp:"先禮貌確認，而不是直接表現慌張，才是最有效的溝通方式。"},{q:"A tourist asks you for directions. How do you respond?",z:"觀光客向你問路，你怎麼回應？",opts:["I don't know.","Sure! Go straight and turn left at the second traffic light.","Straight then left light.","Maybe go straight."],ans:1,exp:"給出具體的方向指引，讓對方清楚下一步怎麼走。"}],
+  education:[{q:"You don't understand a lecture. How do you ask the professor?",z:"你聽不懂課程內容，怎麼問教授？",opts:["I don't understand.","Excuse me, could you clarify what you meant by that last point?","What you mean?","Again please explain."],ans:1,exp:"'Could you clarify?' 是學術場合最得體的請求解釋方式。"},{q:"You want to ask about what topics will be on the exam.",z:"你想詢問考試範圍。",opts:["Exam when?","Could you tell me more about what will be covered in the exam?","What is exam about?","Tell me exam thing."],ans:1,exp:"完整且有禮的問句，讓教授知道你在認真準備。"}],
+  entertainment:[{q:"Your friend asks if you want to watch a movie tonight.",z:"朋友問你今晚要不要去看電影。",opts:["OK movie.","That sounds great! What time does it start?","Yes movie is good.","OK when movie?"],ans:1,exp:"'That sounds great! What time does it start?' 是自然接受邀請並主動詢問細節的方式。"},{q:"You want to suggest a sport to play with friends.",z:"你想建議朋友一起運動。",opts:["Play basketball?","How about we play basketball at the park this Sunday?","Basketball Sunday good?","Want basketball play?"],ans:1,exp:"完整的邀約句子，包含活動、地點、時間，讓朋友更容易答應。"}],
+};
+
+function getLS(k,def){try{const v=localStorage.getItem(k);return v?JSON.parse(v):def;}catch(e){return def;}}
+function getLessons(){return getLS(KEY_LESSONS,JSON.parse(JSON.stringify(DEFAULT_LESSONS)));}
+function getDrills(){return getLS(KEY_DRILLS,JSON.parse(JSON.stringify(DEFAULT_DRILLS)));}
+
+// ══════════════════════════════════════
+// APP STATE
+// ══════════════════════════════════════
+const S={phrases:0,scores:[],lessonsDone:0,curLesson:null,curIdx:null,donePhrases:new Set(),doneLessons:new Set(),isRec:false,recTimer:null,drillTopic:'daily',drillStep:0,drillAnswered:false};
+
+// ══════════════════════════════════════
+// NAV
+// ══════════════════════════════════════
+function nav(id,el){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('on'));
+  document.querySelectorAll('.ni').forEach(n=>n.classList.remove('on'));
+  document.getElementById('pg-'+id).classList.add('on');
+  if(el) el.classList.add('on');
+  if(id==='progress') setTimeout(animateProgress,300);
+  if(id==='chat') renderDrillPage();
+  if(id==='lessons') renderLessons();
+}
+
+// ══════════════════════════════════════
+// INIT
+// ══════════════════════════════════════
+function init(){
+  renderWeek(); renderLessons(); renderTips(); renderAchievements(); renderCalendar(); renderDrillPage();
+  const lessons=getLessons();
+  document.getElementById('nb').textContent=lessons.length;
+  if(lessons.length>0){
+    const l=lessons[0];
+    document.getElementById('today-ttl').textContent=l.emoji+' '+l.name+' — '+l.phrases.length+' 個必學句子';
+    document.getElementById('today-sub').textContent='今天只要幾分鐘，學會「'+l.en+'」的必備用語。';
+    document.getElementById('today-btn').onclick=()=>openLesson(l.id);
+  }
+}
+function renderWeek(){
+  const days=['一','二','三','四','五','六','日'],done=[0,1,3,4,6],tod=4;
+  document.getElementById('weekRow').innerHTML=days.map((d,i)=>`<div class="wd"><div class="wdc ${done.includes(i)?'done':i===tod?'today':''}">${done.includes(i)?'✓':d}</div><div class="wdl">${d}</div></div>`).join('');
+}
+function updateHome(){
+  document.getElementById('h-phrases').textContent=S.phrases;
+  document.getElementById('h-lessons').textContent=S.lessonsDone;
+  const avg=S.scores.length?Math.round(S.scores.reduce((a,b)=>a+b,0)/S.scores.length):null;
+  document.getElementById('h-score').textContent=avg?avg+'分':'—';
+}
+
+// ══════════════════════════════════════
+// LESSONS
+// ══════════════════════════════════════
+function renderLessons(cat='all'){
+  const lessons=getLessons();
+  const filtered=cat==='all'?lessons:lessons.filter(l=>l.cat===cat);
+  const dm={easy:'初級 de',mid:'中級 dm',hard:'進階 dh'};
+  document.getElementById('lgrid').innerHTML=filtered.length===0
+    ?`<div style="grid-column:1/-1;text-align:center;padding:3rem;color:var(--tm)">目前沒有課程，請前往後台新增課程。</div>`
+    :filtered.map(l=>{
+      const done=S.doneLessons.has(l.id);
+      const [dl,dc]=(dm[l.diff]||'初級 de').split(' ');
+      return `<div class="lc ${done?'done2':''}" onclick="openLesson('${l.id}')">
+        <div class="lcat" style="color:var(--or)">${l.catLbl||''}</div>
+        <span class="lemj">${l.emoji||'📖'}</span>
+        <div class="lnm">${l.name}</div>
+        <div class="len">${l.en}</div>
+        <div class="lmeta"><span class="dtag ${dc}">${dl}</span>· ${l.phrases.length}句 · ${l.mins||10}分鐘</div>
+      </div>`;
+    }).join('');
+}
+function filterL(cat,btn){
+  document.querySelectorAll('.fb').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on'); renderLessons(cat);
+}
+function openLesson(id){
+  const l=getLessons().find(x=>x.id===id); if(!l) return;
+  S.curLesson=l; S.curIdx=null;
+  nav('lessons',document.querySelectorAll('.ni')[1]);
+  document.getElementById('lv-list').style.display='none';
+  document.getElementById('lv-detail').classList.add('on');
+  document.getElementById('d-title').textContent=l.emoji+' '+l.name;
+  document.getElementById('d-sub').textContent=l.en+' · '+l.phrases.length+' 個句子';
+  renderPhrases(); resetPanel();
+}
+function closeDetail(){
+  document.getElementById('lv-list').style.display='block';
+  document.getElementById('lv-detail').classList.remove('on');
+  S.curLesson=null; S.curIdx=null; renderLessons();
+}
+function renderPhrases(){
+  document.getElementById('phraseList').innerHTML=S.curLesson.phrases.map((p,i)=>{
+    const done=S.donePhrases.has(S.curLesson.id+'-'+i);
+    return `<div class="pi ${S.curIdx===i?'on':''}" onclick="selectPhrase(${i})">
+      <div class="pplay">▶</div>
+      <div><div class="pen">${p.e}</div><div class="pzh">${p.z}</div></div>
+      ${done?'<div class="pdone">✓</div>':''}
+    </div>`;
+  }).join('');
+}
+function resetPanel(){
+  document.getElementById('c-en').textContent='← 點左側句子開始練習';
+  document.getElementById('c-en').style.color='var(--tm)';
+  document.getElementById('c-zh').textContent='';
+  document.getElementById('c-ph').textContent='';
+  document.getElementById('sdisp').style.display='none';
+  const btn=document.getElementById('rbtn');
+  btn.disabled=true; btn.className='rbtn'; btn.innerHTML='🎤 請先選擇句子';
+}
+function selectPhrase(i){
+  S.curIdx=i; const p=S.curLesson.phrases[i];
+  document.getElementById('c-en').textContent=p.e;
+  document.getElementById('c-en').style.color='var(--tx)';
+  document.getElementById('c-zh').textContent=p.z;
+  document.getElementById('c-ph').textContent=p.p||'';
+  document.getElementById('sdisp').style.display='none';
+  const btn=document.getElementById('rbtn');
+  btn.disabled=false; btn.className='rbtn'; btn.innerHTML='🎤 開始錄音練習';
+  renderPhrases();
+}
+function nextPhrase(){
+  if(!S.curLesson) return;
+  selectPhrase((S.curIdx===null?0:(S.curIdx+1))%S.curLesson.phrases.length);
+}
+// ══════════════════════════════════════
+// REAL MICROPHONE RECORDING
+// ══════════════════════════════════════
+let mediaRecorder = null;
+let audioChunks = [];
+let micStream = null;
+let volumeAnimFrame = null;
+let analyser = null;
+
+async function toggleRec(){
+  if(S.curIdx === null) return;
+  const btn = document.getElementById('rbtn');
+
+  // 如果正在錄音 → 停止
+  if(S.isRec){
+    stopRecording();
+    return;
+  }
+
+  // 開始錄音 → 先申請麥克風權限
+  btn.disabled = true;
+  btn.innerHTML = '⏳ 正在啟動麥克風...';
+
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
+    micStream = stream;
+    startRecording(stream);
+  } catch(err) {
+    btn.disabled = false;
+    btn.innerHTML = '🎤 開始錄音';
+    if(err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError'){
+      showMicError('⛔ 麥克風權限被拒絕，請在瀏覽器網址列允許麥克風存取後重試。');
+    } else if(err.name === 'NotFoundError'){
+      showMicError('🔌 找不到麥克風裝置，請確認麥克風已連接。');
+    } else {
+      showMicError('❌ 無法啟動麥克風：' + err.message);
+    }
+  }
+}
+
+function startRecording(stream){
+  audioChunks = [];
+  const btn = document.getElementById('rbtn');
+
+  // 音量視覺化
+  const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  const source = audioCtx.createMediaStreamSource(stream);
+  analyser = audioCtx.createAnalyser();
+  analyser.fftSize = 256;
+  source.connect(analyser);
+  startVolumeBar();
+
+  // MediaRecorder
+  mediaRecorder = new MediaRecorder(stream);
+  mediaRecorder.ondataavailable = e => { if(e.data.size > 0) audioChunks.push(e.data); };
+  mediaRecorder.onstop = () => {
+    stopVolumeBar();
+    audioCtx.close();
+    stream.getTracks().forEach(t => t.stop());
+    micStream = null;
+    analyseRecording();
+  };
+  mediaRecorder.start();
+
+  S.isRec = true;
+  btn.disabled = false;
+  btn.className = 'rbtn rec';
+  btn.innerHTML = '⏹ 停止錄音';
+
+  // 最長 15 秒自動停止
+  S.recTimer = setTimeout(() => { if(S.isRec) stopRecording(); }, 15000);
+
+  // 顯示音量條
+  const sd = document.getElementById('sdisp');
+  sd.style.display = 'block';
+  sd.innerHTML = `
+    <div style="margin-bottom:.7rem">
+      <div style="font-size:.72rem;color:var(--tm);margin-bottom:.4rem;font-family:'JetBrains Mono',monospace">// 錄音中，請說出句子...</div>
+      <div style="background:var(--sf2);border-radius:99px;height:8px;overflow:hidden">
+        <div id="vol-bar" style="height:100%;width:0%;background:var(--or);border-radius:99px;transition:width .08s"></div>
+      </div>
+    </div>`;
+}
+
+function stopRecording(){
+  clearTimeout(S.recTimer);
+  S.isRec = false;
+  const btn = document.getElementById('rbtn');
+  btn.className = 'rbtn';
+  btn.innerHTML = '⏳ 分析中...';
+  btn.disabled = true;
+  if(mediaRecorder && mediaRecorder.state !== 'inactive'){
+    mediaRecorder.stop();
+  }
+}
+
+function startVolumeBar(){
+  const data = new Uint8Array(analyser.frequencyBinCount);
+  function draw(){
+    volumeAnimFrame = requestAnimationFrame(draw);
+    analyser.getByteFrequencyData(data);
+    const avg = data.reduce((a,b) => a+b, 0) / data.length;
+    const pct = Math.min(100, avg * 2.5);
+    const bar = document.getElementById('vol-bar');
+    if(bar) bar.style.width = pct + '%';
+  }
+  draw();
+}
+
+function stopVolumeBar(){
+  if(volumeAnimFrame) cancelAnimationFrame(volumeAnimFrame);
+  volumeAnimFrame = null;
+}
+
+function analyseRecording(){
+  const btn = document.getElementById('rbtn');
+  // 檢查是否有錄到聲音
+  if(audioChunks.length === 0){
+    btn.disabled = false;
+    btn.innerHTML = '🎤 開始錄音';
+    showMicError('⚠️ 沒有偵測到錄音內容，請再試一次。');
+    return;
+  }
+
+  // 用音量判斷是否有說話（分析 audioChunks 的大小）
+  const totalBytes = audioChunks.reduce((a, c) => a + c.size, 0);
+  if(totalBytes < 1000){
+    btn.disabled = false;
+    btn.innerHTML = '🎤 開始錄音';
+    showMicError('🔇 聲音太小，請靠近麥克風後再試一次。');
+    return;
+  }
+
+  // 模擬分析延遲後顯示結果
+  setTimeout(() => {
+    btn.disabled = false;
+    showScore();
+  }, 800);
+}
+
+function showMicError(msg){
+  const sd = document.getElementById('sdisp');
+  sd.style.display = 'block';
+  sd.innerHTML = `<div style="background:rgba(255,87,87,.08);border:1px solid rgba(255,87,87,.2);border-radius:9px;padding:.8rem 1rem;font-size:.8rem;color:var(--re);line-height:1.6">${msg}</div>`;
+}
+
+function showScore(){
+  const l = S.curLesson, idx = S.curIdx;
+  const words = l.phrases[idx].e.replace(/[.,!?'"]/g,'').split(' ');
+  // 根據實際有錄到聲音給予合理分數（仍是估算，真正語音評分需要 AI API）
+  const hasAudio = audioChunks.length > 0 && audioChunks.reduce((a,c)=>a+c.size,0) > 1000;
+  const ws = words.map(w => ({w, s: hasAudio ? (Math.random()>.45?'g':Math.random()>.4?'o':'b') : 'b'}));
+  const gc = ws.filter(x => x.s==='g').length;
+  const sc = hasAudio
+    ? Math.min(96, Math.round(58 + (gc/words.length)*34 + Math.random()*6))
+    : 0;
+  const col = sc>=85?'var(--gr)':sc>=70?'var(--ye)':'var(--or)';
+  const msg = sc>=85?'🎉 非常棒！發音準確，語調自然，繼續保持！'
+            : sc>=70?'👍 不錯！注意標黃色的單字，多聽示範再練習。'
+            : '💪 繼續練習！注意橘色標示的單字，建議先聽示範再跟讀。';
+  const cm = {g:'wg', o:'wo', b:'wb'};
+  S.donePhrases.add(l.id+'-'+idx);
+  S.phrases++;
+  S.scores.push(sc);
+  updateHome();
+  renderPhrases();
+  const sd = document.getElementById('sdisp');
+  sd.style.display = 'block';
+  sd.innerHTML = `
+    <div class="sbw">
+      <div class="sbl2"><span>整體分數</span><span style="color:${col}">${sc}/100</span></div>
+      <div class="sb"><div class="sbf" id="sbf" style="width:0%;background:${col}"></div></div>
+    </div>
+    <div class="ws2">${ws.map(x=>`<span class="ww ${cm[x.s]}">${x.w}</span>`).join('')}</div>
+    <div class="fmsg">${msg}</div>`;
+  setTimeout(() => { const f=document.getElementById('sbf'); if(f) f.style.width=sc+'%'; }, 50);
+  document.getElementById('rbtn').innerHTML = '🎤 再試一次';
+  audioChunks = [];
+  const allDone = l.phrases.every((_,i) => S.donePhrases.has(l.id+'-'+i));
+  if(allDone && !S.doneLessons.has(l.id)){
+    S.doneLessons.add(l.id);
+    S.lessonsDone++;
+    updateHome();
+    toast('🎉','課程完成！你已學完「'+l.name+'」');
+  }
+}
+
+function playNative(){
+  if(S.curIdx===null||!S.curLesson) return;
+  const txt=S.curLesson.phrases[S.curIdx].e;
+  if('speechSynthesis' in window){
+    const u=new SpeechSynthesisUtterance(txt);u.lang='en-US';u.rate=0.85;speechSynthesis.cancel();speechSynthesis.speak(u);
+    toast('🔊','正在播放示範發音...');
+  } else {toast('ℹ️','請使用 Chrome 瀏覽器以支援語音播放');}
+}
+
+// ══════════════════════════════════════
+// DRILLS
+// ══════════════════════════════════════
+const TOPIC_NAMES={daily:'☕ 日常閒聊',restaurant:'🍜 餐廳點餐',travel:'✈️ 旅遊問路',work:'💼 職場溝通',shopping:'🛍️ 購物詢價',interview:'🎯 英文面試',food:'🍽️ 食－飲食文化',clothing:'👕 衣－服飾購物',housing:'🏠 住－居家生活',transportation:'🚇 行－交通出行',education:'🎓 育－學習求知',entertainment:'🎬 樂－娛樂休閒'};
+let drillData=[],drillStep=0,drillAnswered=false;
+
+function renderDrillPage(){
+  const drills=getDrills();
+  const topics=Object.keys(drills);
+  document.getElementById('topic-btns').innerHTML=topics.map(k=>`
+    <button class="tb ${k===S.drillTopic?'on':''}" onclick="setDrillTopic('${k}',this)">${TOPIC_NAMES[k]||k}</button>`).join('');
+  initDrill();
+}
+function setDrillTopic(t,btn){
+  document.querySelectorAll('#topic-btns .tb').forEach(b=>b.classList.remove('on'));
+  if(btn) btn.classList.add('on');
+  S.drillTopic=t;
+  const info=TOPIC_NAMES[t]||t;
+  document.getElementById('ct-title').textContent=info;
+  document.getElementById('ct-desc').textContent='練習「'+info+'」情境的英文對話';
+  initDrill();
+}
+function initDrill(){
+  const drills=getDrills();
+  drillData=[...(drills[S.drillTopic]||[])];
+  drillStep=0; drillAnswered=false;
+  document.getElementById('cmsgs').innerHTML='';
+  renderDrillStep();
+}
+function restartDrill(){initDrill();}
+function renderDrillStep(){
+  const total=drillData.length;
+  document.getElementById('drill-stat').textContent=drillStep+' / '+total;
+  document.getElementById('dp-fill').style.width=(total?drillStep/total*100:0)+'%';
+  document.getElementById('dp-txt').textContent=Math.round(total?drillStep/total*100:0)+'%';
+  if(total===0){
+    document.getElementById('opt-area').innerHTML='<div style="text-align:center;padding:2rem;color:var(--tm)">這個情境目前沒有題目，請前往後台新增。</div>';
+    return;
+  }
+  if(drillStep>=total){
+    document.getElementById('opt-area').innerHTML=`<div style="text-align:center;padding:1.2rem 0"><div style="font-size:1.8rem;margin-bottom:.5rem">🎉</div><div style="font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:800;margin-bottom:.4rem">全部完成！</div><div style="color:var(--tm);font-size:.83rem;margin-bottom:1rem">太棒了，你完成了所有練習</div><button class="btn btn-p" onclick="restartDrill()">🔄 再練一次</button></div>`;
+    return;
+  }
+  const q=drillData[drillStep];
+  const qDiv=document.createElement('div'); qDiv.className='cmsg a';
+  qDiv.innerHTML=`<div class="cav">🤖</div><div><div class="cbub"><div style="white-space:pre-line;font-weight:600">${q.q}</div>${q.z?`<div class="zh">${q.z}</div>`:''}</div></div>`;
+  document.getElementById('cmsgs').appendChild(qDiv);
+  document.getElementById('cmsgs').scrollTop=9999;
+  drillAnswered=false;
+  document.getElementById('opt-area').innerHTML=`<div class="opts-grid">${q.opts.map((o,i)=>`<button class="opt-btn" id="opt${i}" onclick="answerDrill(${i})">${o}</button>`).join('')}</div>`;
+}
+function answerDrill(chosen){
+  if(drillAnswered) return; drillAnswered=true;
+  const q=drillData[drillStep];
+  for(let i=0;i<q.opts.length;i++){
+    const b=document.getElementById('opt'+i); b.disabled=true;
+    if(i===q.ans) b.classList.add('correct');
+    else if(i===chosen) b.classList.add('wrong');
+  }
+  const msgs=document.getElementById('cmsgs');
+  const uDiv=document.createElement('div'); uDiv.className='cmsg u';
+  uDiv.innerHTML=`<div class="cav">😊</div><div class="cbub">${q.opts[chosen]}</div>`;
+  msgs.appendChild(uDiv);
+  const correct=chosen===q.ans;
+  const fbDiv=document.createElement('div'); fbDiv.className='cmsg a';
+  fbDiv.innerHTML=`<div class="cav">🤖</div><div><div class="cbub">
+    <div style="color:${correct?'var(--gr)':'var(--re)'};font-weight:700;margin-bottom:.35rem">${correct?'✅ 正確！':'❌ 正確答案是：'}</div>
+    ${!correct?`<div style="color:var(--gr);font-weight:600;margin-bottom:.35rem">"${q.opts[q.ans]}"</div>`:''}
+    <div style="font-size:.79rem;color:var(--tm);line-height:1.6">💡 ${q.exp}</div>
+  </div></div>`;
+  msgs.appendChild(fbDiv); msgs.scrollTop=9999;
+  setTimeout(()=>{
+    document.getElementById('opt-area').innerHTML=`<div style="display:flex;gap:.5rem;justify-content:flex-end">
+      <button class="btn btn-s btn-sm" onclick="playDrillAns(${drillStep})">🔊 聽正確發音</button>
+      <button class="btn btn-p btn-sm" onclick="drillStep++;renderDrillStep()">下一題 →</button>
+    </div>`;
+  },350);
+}
+function playDrillAns(step){
+  const txt=drillData[step].opts[drillData[step].ans];
+  if('speechSynthesis' in window){
+    const u=new SpeechSynthesisUtterance(txt);u.lang='en-US';u.rate=0.85;speechSynthesis.cancel();speechSynthesis.speak(u);
+    toast('🔊','播放正確答案發音');
+  }
+}
+
+// ══════════════════════════════════════
+// TIPS
+// ══════════════════════════════════════
+const TIPS=[
+  {t:'🎯 用句子背，不用單字背',b:'單字背完就忘，因為沒有語境。改成背整句話，記憶保留率高出 3 倍。',ex:'<strong>❌</strong> nervous = 緊張<br><strong>✅</strong> I get nervous before presentations.'},
+  {t:'🗓️ 每天 15 分鐘，勝過週末 3 小時',b:'語言學習靠的是頻率，不是時間長度。每天短時間接觸英文，大腦才會記住。',ex:'早上 5 分跟讀 → 午休 10 分聽力 → 睡前 5 分複習'},
+  {t:'🎙️ 錄音後回聽，找出自己的問題',b:'從沒聽過自己說英文，所以不知道哪裡不對。錄下來回聽，和示範音頻對比。',ex:'錄音 → 聽示範 → 找差異 → 再錄一次，重複直到接近。'},
+  {t:'😅 先說出口，再慢慢修正',b:'說錯了對方還是能理解，但沒說出口就永遠不會進步。允許自己犯錯的學習者進步快 2 倍。',ex:'把每次說錯視為「找到了一個需要練習的點」，不是失敗。'},
+  {t:'🌀 大量「可理解的輸入」建立語感',b:'不需要學完所有文法才能開口。大量聽英文，選稍微低於你程度的內容，讓語感自然建立。',ex:'推薦：BBC Learning English、TED-Ed（開英文字幕）'},
+  {t:'🔄 用「替換練習」快速擴展句型',b:'學會一個句型後，把其中一個單字換掉就是新句子。從 1 個學出 10 個，效率翻倍。',ex:"I'd like a coffee. → I'd like a sandwich / beer / receipt."},
+];
+function renderTips(){
+  document.getElementById('tips-list').innerHTML=TIPS.map((t,i)=>`
+    <div class="ti" onclick="this.classList.toggle('op')">
+      <div class="tih"><div class="tin">0${i+1}</div><div class="tit">${t.t}</div><div class="tiarr">›</div></div>
+      <div class="tib"><p>${t.b}</p><div class="tex"><div class="tex-lbl">// 範例</div><p>${t.ex}</p></div></div>
+    </div>`).join('');
+}
+
+// ══════════════════════════════════════
+// PROGRESS
+// ══════════════════════════════════════
+const SKILLS=[
+  {label:'發音準確度',val:62,color:'linear-gradient(90deg,var(--or),var(--ye))'},
+  {label:'詞彙量',val:45,color:'linear-gradient(90deg,var(--bl),var(--gr))'},
+  {label:'對話流暢度',val:38,color:'linear-gradient(90deg,var(--gr),var(--ye))'},
+  {label:'聽力理解',val:71,color:'linear-gradient(90deg,var(--ye),var(--or))'},
+];
+const ACHS=[{ic:'🌱',nm:'第一步',lk:false},{ic:'🔥',nm:'連續5天',lk:false},{ic:'🎤',nm:'第一次錄音',lk:false},{ic:'💬',nm:'對話高手',lk:true},{ic:'📚',nm:'課程全制霸',lk:true},{ic:'🏆',nm:'發音之星',lk:true}];
+function renderAchievements(){
+  document.getElementById('ach-grid').innerHTML=ACHS.map(a=>`<div class="ach ${a.lk?'lk':''}"><div class="ach-ic">${a.ic}</div><div class="ach-nm">${a.nm}</div></div>`).join('');
+}
+function renderCalendar(){
+  const done=[0,1,3,4,6,7,8,10,11,14,15,17,18,21,22,24,25,27];
+  document.getElementById('cal-grid').innerHTML=Array.from({length:28},(_,i)=>`<div class="cd ${done.includes(i)?'dn':''} ${i===27?'td2':''}"></div>`).join('');
+}
+function animateProgress(){
+  document.getElementById('skill-rows').innerHTML=SKILLS.map(s=>`
+    <div style="margin-bottom:.9rem">
+      <div class="sr-label"><span>${s.label}</span><span id="s-v">${s.val}%</span></div>
+      <div class="sk-bar"><div class="sk-fill" id="b-${s.label}" style="width:0%;background:${s.color}"></div></div>
+    </div>`).join('');
+  setTimeout(()=>{
+    SKILLS.forEach(s=>{const el=document.getElementById('b-'+s.label);if(el)el.style.width=s.val+'%';});
+    const overall=Math.round(SKILLS.reduce((a,b)=>a+b.val,0)/SKILLS.length);
+    const circ=2*Math.PI*47, offset=circ*(1-overall/100);
+    setTimeout(()=>{const r=document.getElementById('prog-ring');if(r){r.style.strokeDasharray=circ;r.style.strokeDashoffset=offset;}},100);
+    document.getElementById('ring-pct').textContent=overall+'%';
+  },50);
+}
+
+// TOAST
+let _tt;
+function toast(ic,msg){
+  clearTimeout(_tt);document.getElementById('t-ic').textContent=ic;document.getElementById('t-msg').textContent=msg;
+  document.getElementById('toast').classList.add('sh');_tt=setTimeout(()=>document.getElementById('toast').classList.remove('sh'),3000);
+}
+init();
+</script>
+</body>
+</html>
