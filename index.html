@@ -195,11 +195,73 @@ svg.rsvg{transform:rotate(-90deg);}
 .toast{position:fixed;bottom:1.5rem;right:1.5rem;z-index:999;background:var(--sf2);border:1px solid var(--b2);border-radius:11px;padding:.8rem 1.1rem;display:flex;align-items:center;gap:.6rem;font-size:.82rem;font-weight:500;transform:translateY(80px);opacity:0;transition:all .3s;max-width:300px;box-shadow:0 8px 32px rgba(0,0,0,.4);}
 .toast.sh{transform:translateY(0);opacity:1;}
 ::-webkit-scrollbar{width:3px;}::-webkit-scrollbar-thumb{background:var(--b2);border-radius:99px;}
+
+/* ── 漢堡選單按鈕（手機專用）──────────────── */
+.mob-header{display:none;position:fixed;top:0;left:0;right:0;height:52px;background:var(--sf);border-bottom:1px solid var(--b);z-index:300;align-items:center;padding:0 1rem;gap:.8rem;}
+.mob-logo{font-family:'Syne',sans-serif;font-weight:800;font-size:1.15rem;letter-spacing:-.5px;}
+.mob-logo span{color:var(--or);}
+.ham{margin-left:auto;background:none;border:none;cursor:pointer;display:flex;flex-direction:column;gap:5px;padding:.3rem;}
+.ham span{display:block;width:22px;height:2px;background:var(--tx);border-radius:2px;transition:all .25s;}
+.ham.open span:nth-child(1){transform:translateY(7px) rotate(45deg);}
+.ham.open span:nth-child(2){opacity:0;}
+.ham.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg);}
+.mob-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:190;}
+.mob-overlay.on{display:block;}
+
+/* ── RWD 斷點 ─────────────────────────────── */
+@media(max-width:768px){
+  /* 手機頂部 header */
+  .mob-header{display:flex;}
+  /* 主內容區下移騰出 header 高度 */
+  .main{margin-left:0;padding-top:52px;}
+  .page{padding:1.2rem 1rem;}
+  /* 側邊欄滑入式 */
+  .sidebar{transform:translateX(-100%);transition:transform .28s ease;z-index:250;width:240px;}
+  .sidebar.open{transform:translateX(0);}
+  /* 統計卡片：3欄 → 1欄 */
+  .hgrid{grid-template-columns:1fr;}
+  /* 首頁主區：雙欄 → 單欄 */
+  .home2{grid-template-columns:1fr;}
+  /* 課程列表：3欄 → 單欄 */
+  .lgrid{grid-template-columns:1fr;}
+  /* 課程詳情：雙欄 → 單欄 */
+  .lcgrid{grid-template-columns:1fr;}
+  .ppanel{position:static;}
+  /* 對話練習：雙欄 → 單欄 */
+  .chat-shell{grid-template-columns:1fr;height:auto;}
+  .topic-panel{max-height:120px;flex-direction:row;flex-wrap:wrap;gap:.3rem;}
+  .tpl{width:100%;}
+  /* 學習進度：雙欄 → 單欄 */
+  .pgrid{grid-template-columns:1fr;}
+  /* 成就格：3欄 → 2欄 */
+  .ach-grid{grid-template-columns:repeat(2,1fr);}
+  /* 今日推薦按鈕自動換行 */
+  .today-card>div:last-child{flex-direction:column;}
+  .today-card>div:last-child .btn{width:100%;justify-content:center;}
+}
+
+@media(max-width:480px){
+  .pt{font-size:1.35rem;}
+  .scv{font-size:1.5rem;}
+  .opts-grid{grid-template-columns:1fr;}
+  .ach-grid{grid-template-columns:repeat(2,1fr);}
+  .panel-actions{flex-direction:column;}
+  .toast{left:1rem;right:1rem;max-width:none;}
+}
 </style>
 </head>
 <body>
+<!-- 手機頂部 header -->
+<div class="mob-header">
+  <div class="mob-logo">Speak<span>Flow</span></div>
+  <button class="ham" id="hamBtn" onclick="toggleSidebar()" aria-label="開啟選單">
+    <span></span><span></span><span></span>
+  </button>
+</div>
+<div class="mob-overlay" id="mobOverlay" onclick="closeSidebar()"></div>
+
 <div class="shell">
-<aside class="sidebar">
+<aside class="sidebar" id="sidebar">
   <div class="logo">Speak<span>Flow</span></div>
   <nav class="snav">
     <div class="slbl">主選單</div>
@@ -426,6 +488,22 @@ function getDrills(){return getLS(KEY_DRILLS,JSON.parse(JSON.stringify(DEFAULT_D
 const S={phrases:0,scores:[],lessonsDone:0,curLesson:null,curIdx:null,donePhrases:new Set(),doneLessons:new Set(),isRec:false,recTimer:null,drillTopic:'daily',drillStep:0,drillAnswered:false};
 
 // ══════════════════════════════════════
+// MOBILE SIDEBAR
+// ══════════════════════════════════════
+function toggleSidebar(){
+  const sb=document.getElementById('sidebar');
+  const btn=document.getElementById('hamBtn');
+  const ov=document.getElementById('mobOverlay');
+  const open=sb.classList.toggle('open');
+  btn.classList.toggle('open',open);
+  ov.classList.toggle('on',open);
+}
+function closeSidebar(){
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('hamBtn').classList.remove('open');
+  document.getElementById('mobOverlay').classList.remove('on');
+}
+
 // NAV
 // ══════════════════════════════════════
 function nav(id,el){
@@ -436,6 +514,7 @@ function nav(id,el){
   if(id==='progress') setTimeout(animateProgress,300);
   if(id==='chat') renderDrillPage();
   if(id==='lessons') renderLessons();
+  closeSidebar(); // 手機點選後自動收起
 }
 
 // ══════════════════════════════════════
