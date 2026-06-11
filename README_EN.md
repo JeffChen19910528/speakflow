@@ -25,7 +25,7 @@
 
 | Feature | Description |
 |---------|-------------|
-| 📚 Lessons | **50 topic-based lessons** covering real-life situations with pronunciation recording |
+| 📚 Lessons | **80 topic-based lessons** (incl. TOEIC & TOEFL advanced) with pronunciation recording |
 | 🎙️ Recording & Playback | Record with your microphone and replay to compare with the model |
 | 🔊 Model Pronunciation | Click "Listen" to hear standard American English via Web Speech API |
 | 💬 Conversation Drills | Multiple-choice situational questions to practice natural English responses |
@@ -65,7 +65,7 @@ Click "📚 Lessons" in the sidebar to see all available courses.
 **Filter lessons:**
 - Use the category tabs: All / Food / Clothing / Housing / Transport / Education / Entertainment / Daily / Work / Travel / Social
 - Each lesson card shows: topic, sentence count, estimated time, difficulty level
-- **50 lessons total**, covering everyday life situations
+- **80 lessons total**, covering everyday life + TOEIC business + TOEFL academic
 
 **Course Categories:**
 
@@ -81,6 +81,8 @@ Click "📚 Lessons" in the sidebar to see all available courses.
 | 💼 Work | Business email, meetings, job interviews, networking, presentations |
 | ✈️ Travel | Customs & immigration, sightseeing, accommodation, dining abroad |
 | 🤝 Social | Greetings, parties, compliments, opinions, apologies |
+| 📊 TOEIC | Business email, conference calls, negotiation, logistics, HR, marketing, finance, customer service, project management, product launch, trade fairs, legal, IT, real estate, insurance |
+| 🎓 TOEFL | Academic discussion, lectures, research methods, environmental science, economics, psychology, history, tech ethics, health & medicine, literature, debate, sociology, integrated writing, speaking tasks, opinion essays |
 
 **Card indicators:**
 - 🟢 Beginner / 🟡 Intermediate / 🔴 Advanced
