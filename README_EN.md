@@ -25,7 +25,7 @@
 
 | Feature | Description |
 |---------|-------------|
-| 📚 Lessons | **80 topic-based lessons** (incl. TOEIC & TOEFL advanced) with pronunciation recording |
+| 📚 Lessons | **130 topic-based lessons** (incl. TOEIC & TOEFL advanced) with pronunciation recording |
 | 🎙️ Recording & Playback | Record with your microphone and replay to compare with the model |
 | 🔊 Model Pronunciation | Click "Listen" to hear standard American English via Web Speech API |
 | 💬 Conversation Drills | Multiple-choice situational questions to practice natural English responses |
@@ -65,7 +65,7 @@ Click "📚 Lessons" in the sidebar to see all available courses.
 **Filter lessons:**
 - Use the category tabs: All / Food / Clothing / Housing / Transport / Education / Entertainment / Daily / Work / Travel / Social
 - Each lesson card shows: topic, sentence count, estimated time, difficulty level
-- **80 lessons total**, covering everyday life + TOEIC business + TOEFL academic
+- **130 lessons total**, covering everyday life + TOEIC business + TOEFL academic
 
 **Course Categories:**
 
